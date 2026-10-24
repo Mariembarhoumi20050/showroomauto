@@ -1,0 +1,78 @@
+<section class="filters">
+  <div class="field">
+    <label for="brand">Brand</label>
+    <div class="input-wrap">
+      <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
+      <input id="brand" type="text" placeholder="Ex: Peugeot"
+             [(ngModel)]="brand" (ngModelChange)="applyFilters()">
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="model">Model</label>
+    <div class="input-wrap">
+      <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
+      <input id="model" type="text" placeholder="Ex: 208"
+             [(ngModel)]="model" (ngModelChange)="applyFilters()">
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="maxPrice">Max price (DNT)</label>
+    <input id="maxPrice" type="number" min="0" placeholder="Ex: 60000"
+           [(ngModel)]="maxPrice" (ngModelChange)="applyFilters()">
+  </div>
+
+  <div class="field">
+    <label for="sort">Sort by</label>
+    <select id="sort" [(ngModel)]="sortBy" (ngModelChange)="applyFilters()">
+      <option value="default">Default</option>
+      <option value="priceAsc">Price: low to high</option>
+      <option value="priceDesc">Price: high to low</option>
+      <option value="powerDesc">Power: high to low</option>
+    </select>
+  </div>
+
+  <label class="check">
+    <input type="checkbox" [(ngModel)]="onlyFavorites" (ngModelChange)="applyFilters()">
+    Favorites only ({{ favoriteIds.length }})
+  </label>
+
+  <button class="reset" type="button" (click)="resetFilters()">
+    <fa-icon [icon]="faRotateLeft"></fa-icon> Reset
+  </button>
+</section>
+
+<p class="results-count">{{ selectedAutos.length }} / {{ autos.length }} car(s)</p>
+
+<section class="cars-grid">
+  @for (auto of selectedAutos; track auto.id) {
+    <article class="auto-card">
+      <div class="img-wrap">
+        <img [src]="'images/images/' + auto.photo" [alt]="auto.brand + ' ' + auto.model">
+        <button class="fav" type="button"
+                [class.active]="isFavorite(auto.id)"
+                [attr.aria-label]="isFavorite(auto.id) ? 'Remove from favorites' : 'Add to favorites'"
+                (click)="toggleFavorite(auto.id)">
+          <fa-icon [icon]="faHeart"></fa-icon>
+        </button>
+      </div>
+
+      <div class="auto-card-body">
+        <h3>{{ auto.brand }} {{ auto.model }}</h3>
+        <p class="price">{{ auto.price | number }} DNT</p>
+        <p class="power">Power: {{ auto.power }}</p>
+        <span class="badge" [class.low]="auto.availability > 0 && auto.availability <= 2"
+              [class.out]="auto.availability === 0">
+          {{ stockLabel(auto) }}
+        </span>
+      </div>
+
+      <div class="see-more">
+        <button type="button" (click)="selectCar(auto)">See more...</button>
+      </div>
+    </article>
+  } @empty {
+    <p class="empty">No car found. Try changing your filters.</p>
+  }
+</section>
